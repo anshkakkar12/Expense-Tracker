@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Modern UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-name {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-badge {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .amount {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .total-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .total-box p {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .total-box .amount {
+            color: white;
+            font-size: 2em;
+        }
+
+        .expenses-section {
+            grid-column: 1 / -1;
+        }
+
+        .expenses-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .expense-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expense-info {
+            flex: 1;
+        }
+
+        .expense-desc {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .expense-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .expense-category {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            margin-left: 10px;
+        }
+
+        .expense-amount {
+            font-weight: 700;
+            color: #764ba2;
+            font-size: 1.1em;
+            margin-right: 15px;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+
+        .color-food { background-color: #ff6b6b; }
+        .color-travel { background-color: #4ecdc4; }
+        .color-health { background-color: #45b7d1; }
+        .color-shopping { background-color: #ffa502; }
+        .color-other { background-color: #95a5a6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Expense Tracker</h1>
+            <p>Manage your spending smartly</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Add Expense Form -->
+            <div class="card">
+                <h2>➕ Add Expense</h2>
+                <div id="successMsg" class="success-message"></div>
+                <div id="errorMsg" class="error-message"></div>
+                
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" name="amount" placeholder="Enter amount" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="description" placeholder="e.g., Lunch, Bus fare, Medicine" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </form>
+            </div>
+
+            <!-- Summary -->
+            <div class="card">
+                <h2>📊 Spending Summary</h2>
+                <div id="summaryContainer">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Expenses List -->
+            <div class="card expenses-section">
+                <h2>📝 Recent Expenses</h2>
+                <div id="expensesList" class="expenses-list">
+                    <div class="empty-state">No expenses yet. Add one to get started!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Category colors
+        const categoryColors = {
+            food: 'color-food',
+            travel: 'color-travel',
+            health: 'color-health',
+            shopping: 'color-shopping',
+            other: 'color-other'
+        };
+
+        // Show message
+        function showMessage(type, message) {
+            const msgElement = type === 'success' ? document.getElementById('successMsg') : document.getElementById('errorMsg');
+            msgElement.textContent = message;
+            msgElement.style.display = 'block';
+            
+            setTimeout(() => {
+                msgElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Fetch and display expenses
+        async function loadExpenses() {
+            try {
+                const response = await fetch(`${API_URL}/expenses`);
+                const data = await response.json();
+                displayExpenses(data.expenses);
+                loadSummary(); // Reload summary when expenses change
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+                showMessage('error', 'Failed to load expenses');
+            }
+        }
+
+        // Display expenses list
+        function displayExpenses(expenses) {
+            const container = document.getElementById('expensesList');
+            
+            if (expenses.length === 0) {
+                container.innerHTML = '<div class="empty-state">No expenses yet. Add one to get started!</div>';
+                return;
+            }
+
+            container.innerHTML = expenses.map(exp => `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <div class="expense-desc">
+                            ${exp.Description}
+                            <span class="expense-category">${exp.Category}</span>
+                        </div>
+                        <div class="expense-date">${exp.Date}</div>
+                    </div>
+                    <div class="expense-amount">₹${parseFloat(exp.Amount).toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load and display summary
+        async function loadSummary() {
+            try {
+                const response = await fetch(`${API_URL}/summary`);
+                const data = await response.json();
+                displaySummary(data);
+            } catch (error) {
+                console.error('Error loading summary:', error);
+            }
+        }
+
+        // Display summary
+        function displaySummary(data) {
+            const container = document.getElementById('summaryContainer');
+            
+            if (Object.keys(data.summary).length === 0) {
+                container.innerHTML = '<div class="empty-state">No expenses to summarize</div>';
+                return;
+            }
+
+            const summaryHTML = Object.entries(data.summary).map(([category, amount]) => `
+                <div class="summary-item">
+                    <div class="category-name">
+                        <span class="category-badge ${categoryColors[category] || 'color-other'}"></span>
+                        ${category.charAt(0).toUpperCase() + category.slice(1)}
+                    </div>
+                    <div class="amount">₹${parseFloat(amount).toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            container.innerHTML = summaryHTML + `
+                <div class="total-box">
+                    <p>Total Spent</p>
+                    <div class="amount">₹${parseFloat(data.total).toFixed(2)}</div>
+                </div>
+            `;
+        }
+
+        // Handle form submission
+        document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = document.getElementById('amount').value;
+            const description = document.getElementById('description').value;
+
+            try {
+                const response = await fetch(`${API_URL}/add-expense`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount, description })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('success', data.message);
+                    document.getElementById('expenseForm').reset();
+                    loadExpenses();
+                } else {
+                    showMessage('error', data.error || 'Failed to add expense');
+                }
+            } catch (error) {
+                console.error('Error adding expense:', error);
+                showMessage('error', 'Error adding expense');
+            }
+        });
+
+        // Initial load
+        loadExpenses();
+    </script>
+</body>
+</html>
